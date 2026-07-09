@@ -1,3 +1,5 @@
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Header } from '../components/layout';
 import { PageWrapper, PageContent } from '../components/layout';
 import {
@@ -12,6 +14,15 @@ import {
 } from '../components/dashboard';
 
 export function CashIntelligencePage() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
   return (
     <PageWrapper>
       <Header
