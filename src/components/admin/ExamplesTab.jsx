@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, Trash2, Check, X, Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Plus, Pencil, Trash2, Check, X, Loader2, Play } from 'lucide-react';
 import { api } from '../../api';
 import { useToast } from '../shared/Toast';
 import { ConfirmDialog } from '../shared/ConfirmDialog';
@@ -11,6 +11,44 @@ const TABLE_OPTIONS = [
   'gold_snowflake_claimdenials',
 ];
 
+function ResultPreview({ columns, rows, execution_time_ms, bytes_scanned }) {
+  if (!rows || rows.length === 0) return null;
+  return (
+    <div className="border border-border rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-surface-muted/50 border-b border-border">
+        <span className="font-poppins text-[10px] text-text-secondary">
+          {execution_time_ms}ms &middot; {(bytes_scanned ?? 0).toLocaleString()} bytes scanned
+        </span>
+        <span className="font-poppins text-[10px] text-text-secondary">{rows.length} row{rows.length !== 1 ? 's' : ''}</span>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="bg-surface-muted/30">
+              {columns.map((col, i) => (
+                <th key={i} className="px-2 py-1 font-poppins font-medium text-[10px] text-text-secondary uppercase tracking-wider whitespace-nowrap">
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri} className={ri < rows.length - 1 ? 'border-b border-border/50' : ''}>
+                {columns.map((col, ci) => (
+                  <td key={ci} className="px-2 py-1 font-mono text-[10px] text-text-primary whitespace-nowrap">
+                    {row[col] !== null && row[col] !== undefined ? String(row[col]) : <span className="text-text-secondary/50">NULL</span>}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 const EMPTY_FORM = {
   natural_language: '',
   sql: '',
@@ -18,7 +56,7 @@ const EMPTY_FORM = {
   verified: false,
 };
 
-export function ExamplesTab() {
+export function ExamplesTab({ onVerifyChange }) {
   const toast = useToast();
   const [examples, setExamples] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,17 +66,32 @@ export function ExamplesTab() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
+  const [rowRunResults, setRowRunResults] = useState({});
+  const [modalRunning, setModalRunning] = useState(false);
+  const [modalRunResult, setModalRunResult] = useState(null);
+
+  const onVerifyChangeRef = useRef(onVerifyChange);
+  onVerifyChangeRef.current = onVerifyChange;
+
+  const notifyVerify = useCallback((data) => {
+    const total = data.length;
+    const verified = data.filter((ex) => ex.verified).length;
+    const allVerified = total > 0 && verified === total;
+    onVerifyChangeRef.current?.({ allVerified, verified, total });
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const data = await api.adminListExamples();
       setExamples(Array.isArray(data) ? data : []);
+      notifyVerify(Array.isArray(data) ? data : []);
     } catch (e) {
       toast.error(e.message);
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, notifyVerify]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -46,6 +99,7 @@ export function ExamplesTab() {
     setEditingIndex(null);
     setForm(EMPTY_FORM);
     setModalOpen(true);
+    setModalRunResult(null);
   };
 
   const openEdit = (idx) => {
@@ -58,6 +112,7 @@ export function ExamplesTab() {
       verified: !!ex.verified,
     });
     setModalOpen(true);
+    setModalRunResult(null);
   };
 
   const handleSave = async () => {
@@ -110,6 +165,27 @@ export function ExamplesTab() {
     }));
   };
 
+  const handleModalRun = async () => {
+    if (!form.sql.trim()) return;
+    setModalRunning(true);
+    setModalRunResult(null);
+    try {
+      const result = await api.adminRunQuery(form.sql.trim());
+      setModalRunResult({
+        success: true,
+        execution_time_ms: result.execution_time_ms,
+        rows: result.rows,
+        columns: result.columns,
+        bytes_scanned: result.bytes_scanned,
+      });
+      setForm((prev) => ({ ...prev, verified: true }));
+    } catch (e) {
+      setModalRunResult({ success: false, error: e.message });
+    } finally {
+      setModalRunning(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -140,52 +216,91 @@ export function ExamplesTab() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-surface-muted/50 border-b border-border">
-                <th className="px-3 py-2.5 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">#</th>
-                <th className="px-3 py-2.5 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">Natural Language</th>
+                <th className="px-3 py-2.5 w-8 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">#</th>
+                <th className="px-3 py-2.5 w-[18%] font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">Natural Language</th>
                 <th className="px-3 py-2.5 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">SQL</th>
-                <th className="px-3 py-2.5 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">Tables Used</th>
-                <th className="px-3 py-2.5 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">Verified</th>
-                <th className="px-3 py-2.5 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">Actions</th>
+                <th className="px-3 py-2.5 w-24 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">Verified</th>
+                <th className="px-3 py-2.5 w-28 font-poppins font-medium text-xs text-text-secondary uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {examples.map((ex, idx) => (
-                <tr key={idx} className="hover:bg-surface-muted/20 transition-colors">
-                  <td className="px-3 py-2.5 font-prompt text-sm text-text-secondary">{idx}</td>
-                  <td className="px-3 py-2.5 font-prompt text-sm text-text-primary max-w-[240px] truncate" title={ex.natural_language}>
-                    {ex.natural_language}
-                  </td>
-                  <td className="px-3 py-2.5 font-mono text-xs text-primary max-w-[280px] truncate bg-primary-muted/30 rounded" title={ex.sql}>
-                    {ex.sql}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex flex-wrap gap-1">
-                      {(ex.tables_used || []).map((t) => (
-                        <span key={t} className="inline-block px-1.5 py-0.5 bg-primary-muted/40 text-primary text-[10px] font-prompt rounded">
-                          {t.replace('gold_snowflake_', '')}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-3 py-2.5 text-center">
-                    {ex.verified ? (
-                      <Check size={16} className="text-success mx-auto" />
-                    ) : (
-                      <X size={16} className="text-text-secondary/40 mx-auto" />
-                    )}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => openEdit(idx)} className="p-1.5 rounded hover:bg-primary-muted/30 text-text-secondary hover:text-primary transition-colors" title="Edit">
-                        <Pencil size={14} />
-                      </button>
-                      <button onClick={() => setDeleteTarget(idx)} className="p-1.5 rounded hover:bg-danger-light text-text-secondary hover:text-danger transition-colors" title="Delete">
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {examples.map((ex, idx) => {
+                const rowResult = rowRunResults[idx];
+                return (
+                  <tr key={idx} className="hover:bg-surface-muted/20 transition-colors">
+                    <td className="px-3 py-2.5 font-prompt text-sm text-text-secondary">{idx}</td>
+                    <td className="px-3 py-2.5 font-prompt text-sm text-text-primary break-words" title={ex.natural_language}>
+                      {ex.natural_language}
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <div className="max-h-32 overflow-y-auto bg-primary-muted/20 rounded p-2">
+                        <code className="font-mono text-xs text-primary leading-relaxed whitespace-pre-wrap break-all">
+                          {ex.sql}
+                        </code>
+                      </div>
+                    </td>
+                    <td className="px-3 py-2.5 align-middle">
+                      <div className="flex items-center justify-center">
+                        {rowResult && !rowResult.success ? (
+                          <span className="text-danger text-[10px] font-prompt" title={rowResult.error}>Error</span>
+                        ) : ex.verified ? (
+                          <div className="flex items-center gap-1 text-success">
+                            <Check size={14} />
+                            <span className="text-[10px] font-prompt">
+                              {rowResult?.execution_time_ms ? `${rowResult.execution_time_ms}ms` : 'Verified'}
+                            </span>
+                          </div>
+                        ) : (
+                          <X size={14} className="text-text-secondary/40" />
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => openEdit(idx)}
+                          className="p-1.5 rounded hover:bg-primary-muted/30 text-text-secondary hover:text-primary transition-colors"
+                          title="Edit"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(idx)}
+                          className="p-1.5 rounded hover:bg-danger-light text-text-secondary hover:text-danger transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {examples.map((ex, idx) => {
+                const rowResult = rowRunResults[idx];
+                if (!rowResult) return null;
+                return (
+                  <tr key={`${idx}-result`}>
+                    <td colSpan={5} className="px-3 pb-3">
+                      {rowResult.success ? (
+                        <ResultPreview
+                          columns={rowResult.columns}
+                          rows={rowResult.rows}
+                          execution_time_ms={rowResult.execution_time_ms}
+                          bytes_scanned={rowResult.bytes_scanned}
+                        />
+                      ) : (
+                        <div className="bg-danger-light border border-danger/30 rounded-lg p-3">
+                          <p className="font-poppins text-xs text-danger-dark font-medium mb-0.5">Query failed</p>
+                          <p className="font-mono text-[11px] text-danger-dark/80 whitespace-pre-wrap break-all">
+                            {rowResult.error}
+                          </p>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -215,11 +330,52 @@ export function ExamplesTab() {
                 <label className="block font-poppins text-sm font-medium text-text-secondary mb-1">SQL *</label>
                 <textarea
                   value={form.sql}
-                  onChange={(e) => setForm((p) => ({ ...p, sql: e.target.value }))}
+                  onChange={(e) => {
+                    setForm((p) => ({ ...p, sql: e.target.value }));
+                    setModalRunResult(null);
+                  }}
                   rows={4}
                   className="w-full px-3 py-2 border border-border rounded-lg font-mono text-xs text-primary bg-primary-muted/10 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
                   placeholder="SELECT COUNT(*) FROM ..."
                 />
+                <div className="flex items-center gap-3 mt-2">
+                  <button
+                    type="button"
+                    onClick={handleModalRun}
+                    disabled={modalRunning || !form.sql.trim()}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white font-poppins text-xs hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  >
+                    {modalRunning ? (
+                      <Loader2 size={12} className="animate-spin" />
+                    ) : (
+                      <Play size={12} />
+                    )}
+                    Run Query
+                  </button>
+                  {modalRunResult && (
+                    modalRunResult.success ? (
+                      <span className="flex items-center gap-1 text-success font-prompt text-xs">
+                        <Check size={12} />
+                        OK ({modalRunResult.execution_time_ms}ms)
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-danger font-prompt text-xs">
+                        <X size={12} />
+                        {modalRunResult.error}
+                      </span>
+                    )
+                  )}
+                </div>
+                {modalRunResult?.success && modalRunResult?.rows && (
+                  <div className="mt-3">
+                    <ResultPreview
+                      columns={modalRunResult.columns}
+                      rows={modalRunResult.rows}
+                      execution_time_ms={modalRunResult.execution_time_ms}
+                      bytes_scanned={modalRunResult.bytes_scanned}
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
@@ -243,14 +399,12 @@ export function ExamplesTab() {
               </div>
 
               <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="verified"
-                  checked={form.verified}
-                  onChange={(e) => setForm((p) => ({ ...p, verified: e.target.checked }))}
-                  className="w-4 h-4 rounded border-border text-primary focus:ring-primary/40"
-                />
-                <label htmlFor="verified" className="font-prompt text-sm text-text-secondary">Verified</label>
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded ${form.verified ? 'bg-success-muted text-success' : 'bg-surface-muted text-text-secondary'}`}>
+                  {form.verified ? <Check size={12} /> : <X size={12} />}
+                  <span className="font-prompt text-xs">
+                    {form.verified ? 'Verified (query ran successfully)' : 'Not verified — run the query first'}
+                  </span>
+                </div>
               </div>
             </div>
 

@@ -294,6 +294,42 @@ export const api = {
     return res.json();
   },
 
+  async adminRunQuery(sql) {
+    const res = await authFetch(`${BASE_URL}/admin/examples/run`, {
+      method: 'POST',
+      body: JSON.stringify({ sql }),
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || data.error || `Query failed (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminGetBusinessRules() {
+    const res = await authFetch(`${BASE_URL}/admin/business-rules`);
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to load business rules (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminUpdateBusinessRules(text) {
+    const res = await authFetch(`${BASE_URL}/admin/business-rules`, {
+      method: 'PUT',
+      body: JSON.stringify({ text }),
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to update business rules (${res.status})`);
+    }
+    return res.json();
+  },
+
   async adminTrain() {
     const res = await authFetch(`${BASE_URL}/admin/train`, {
       method: 'POST',

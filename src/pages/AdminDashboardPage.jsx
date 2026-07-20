@@ -6,11 +6,12 @@ import { api } from '../api';
 import { useToast } from '../components/shared/Toast';
 import { ConfirmDialog } from '../components/shared/ConfirmDialog';
 import { Header, PageWrapper, PageContent } from '../components/layout';
-import { ExamplesTab, DDLTab } from '../components/admin';
+import { ExamplesTab, DDLTab, BusinessRulesTab } from '../components/admin';
 
 const TABS = [
   { key: 'examples', label: 'Examples' },
   { key: 'ddl', label: 'DDL Files' },
+  { key: 'business-rules', label: 'Business Rules' },
 ];
 
 export function AdminDashboardPage() {
@@ -20,6 +21,8 @@ export function AdminDashboardPage() {
   const activeTab = searchParams.get('tab') || 'examples';
   const [training, setTraining] = useState(false);
   const [confirmTrain, setConfirmTrain] = useState(false);
+  const [allVerified, setAllVerified] = useState(false);
+  const [verifyInfo, setVerifyInfo] = useState({ verified: 0, total: 0 });
 
   if (authLoading) return null;
   if (!isAuthenticated) return <Navigate to="/" replace />;
@@ -69,23 +72,37 @@ export function AdminDashboardPage() {
             <h2 className="font-poppins font-bold text-2xl text-text-primary">Admin Panel</h2>
             <p className="font-prompt text-sm text-text-secondary">Manage examples and DDL files</p>
           </div>
-          <button
-            onClick={() => setConfirmTrain(true)}
-            disabled={training}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-header text-white font-poppins text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60 shadow-md"
-          >
-            {training ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Training...
-              </>
-            ) : (
-              <>
-                <Brain size={16} />
-                Train Now
-              </>
+          <div className="flex items-center gap-3">
+            {activeTab === 'examples' && (
+              <div className="text-right">
+                <p className="font-prompt text-xs text-text-secondary">
+                  {verifyInfo.total > 0
+                    ? `${verifyInfo.verified}/${verifyInfo.total} verified`
+                    : 'No examples'}
+                </p>
+              </div>
             )}
-          </button>
+            {activeTab === 'examples' && (
+              <button
+                onClick={() => setConfirmTrain(true)}
+                disabled={training || !allVerified}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-header text-white font-poppins text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 shadow-md"
+                title={!allVerified && verifyInfo.total > 0 ? `Run & verify all ${verifyInfo.total} examples first` : ''}
+              >
+                {training ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Training...
+                  </>
+                ) : (
+                  <>
+                    <Brain size={16} />
+                    Train Now
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="border-b border-border">
@@ -107,8 +124,16 @@ export function AdminDashboardPage() {
         </div>
 
         <div className="min-h-[50vh]">
-          {activeTab === 'examples' && <ExamplesTab />}
+          {activeTab === 'examples' && (
+            <ExamplesTab
+              onVerifyChange={({ allVerified, verified, total }) => {
+                setAllVerified(allVerified);
+                setVerifyInfo({ verified, total });
+              }}
+            />
+          )}
           {activeTab === 'ddl' && <DDLTab />}
+          {activeTab === 'business-rules' && <BusinessRulesTab />}
         </div>
 
         <ConfirmDialog
