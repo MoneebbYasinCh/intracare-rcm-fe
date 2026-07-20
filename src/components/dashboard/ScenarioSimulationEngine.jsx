@@ -172,9 +172,9 @@ export function ScenarioSimulationEngine() {
   };
 
   return (
-    <div className="border border-border rounded-xl p-4 md:p-5">
+    <div className="border border-border rounded-xl p-[4%] md:p-5">
       <div className="mb-3">
-        <h3 className="font-poppins font-semibold text-base md:text-lg text-primary leading-normal">
+        <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary leading-normal">
           Scenario Simulation Engine
         </h3>
         <p className="font-poppins font-light text-xs md:text-sm text-text-secondary leading-normal">
@@ -188,12 +188,12 @@ export function ScenarioSimulationEngine() {
       >
         <div>
           <p className="font-poppins text-xs text-text-secondary">Baseline</p>
-          <p className="font-poppins font-bold text-xl text-primary">{formatCurrency(baseline)}</p>
+          <p className="font-poppins font-bold text-[5.5vw] md:text-xl text-primary">{formatCurrency(baseline)}</p>
           <p className="font-poppins text-xs text-text-secondary">Current forecast</p>
         </div>
         <div className="text-right">
           <p className="font-poppins text-xs text-text-secondary">Projected</p>
-          <p className="font-poppins font-bold text-xl text-success">{formatCurrency(projected)}</p>
+          <p className="font-poppins font-bold text-[5.5vw] md:text-xl text-success">{formatCurrency(projected)}</p>
         </div>
       </div>
 
@@ -208,7 +208,7 @@ export function ScenarioSimulationEngine() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="bg-surface-muted rounded-xl p-4">
           <h4 className="font-poppins font-semibold text-sm text-primary mb-3">Selected Scenarios:</h4>
           {selectedScenarios.length > 0 ? (

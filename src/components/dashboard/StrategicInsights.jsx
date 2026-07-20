@@ -1,7 +1,7 @@
 export function StrategicInsights() {
   return (
-    <div className="bg-surface-muted rounded-xl p-4 md:p-5">
-      <h3 className="font-poppins font-semibold text-base md:text-lg text-primary mb-3">
+    <div className="bg-surface-muted rounded-xl p-[4%] md:p-5">
+      <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary mb-3">
         Strategic Insights
       </h3>
       <ul className="space-y-1.5">

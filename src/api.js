@@ -186,6 +186,126 @@ export const api = {
     return res.json();
   },
 
+  // ── Admin API ──
+
+  async adminListExamples() {
+    const res = await authFetch(`${BASE_URL}/admin/examples`);
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to list examples (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminAddExample(body) {
+    const res = await authFetch(`${BASE_URL}/admin/examples`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to add example (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminUpdateExample(index, body) {
+    const res = await authFetch(`${BASE_URL}/admin/examples/${index}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to update example (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminDeleteExample(index) {
+    const res = await authFetch(`${BASE_URL}/admin/examples/${index}`, {
+      method: 'DELETE',
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to delete example (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminListDDL() {
+    const res = await authFetch(`${BASE_URL}/admin/ddl`);
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to list DDL files (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminGetDDL(tableName) {
+    const res = await authFetch(`${BASE_URL}/admin/ddl/${encodeURIComponent(tableName)}`);
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to get DDL (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminCreateDDL(body) {
+    const res = await authFetch(`${BASE_URL}/admin/ddl`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to create DDL (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminUpdateDDL(tableName, body) {
+    const res = await authFetch(`${BASE_URL}/admin/ddl/${encodeURIComponent(tableName)}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to update DDL (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminDeleteDDL(tableName) {
+    const res = await authFetch(`${BASE_URL}/admin/ddl/${encodeURIComponent(tableName)}`, {
+      method: 'DELETE',
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Failed to delete DDL (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async adminTrain() {
+    const res = await authFetch(`${BASE_URL}/admin/train`, {
+      method: 'POST',
+    });
+    if (!res) throw new Error('Unable to connect to server');
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Training failed (${res.status})`);
+    }
+    return res.json();
+  },
+
   getAccessToken,
   getRefreshToken,
   setTokens,

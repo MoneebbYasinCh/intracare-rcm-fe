@@ -22,23 +22,16 @@ export function Section({ children, className = '' }) {
   );
 }
 
-export function Grid({ children, cols = 2, gap = 4, className = '' }) {
+export function Grid({ children, cols = 2, className = '' }) {
   const colsClass = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
-  };
-
-  const gapClass = {
-    2: 'gap-2',
-    3: 'gap-3',
-    4: 'gap-4',
-    6: 'gap-6',
+    3: 'grid-cols-1 md:grid-cols-2',
+    4: 'grid-cols-1 md:grid-cols-2',
   };
 
   return (
-    <div className={`grid ${colsClass[cols]} ${gapClass[gap]} ${className}`}>
+    <div className={`grid ${colsClass[cols]} gap-4 ${className}`}>
       {children}
     </div>
   );

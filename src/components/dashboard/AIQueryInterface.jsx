@@ -219,7 +219,7 @@ export function AIQueryInterface() {
       boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.19)',
     }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 mx-3 mt-3">
+      <div className="flex items-center gap-2 mx-[2%] mt-3">
         <button
           onClick={() => setShowSidebar((s) => !s)}
           className="flex items-center gap-1 px-2 md:px-3 py-1.5 rounded-md bg-white/30 hover:bg-white/50 transition-colors text-[10px] md:text-xs font-poppins text-text-primary"
@@ -240,7 +240,7 @@ export function AIQueryInterface() {
         </button>
       </div>
 
-      <div className="mx-3 mt-2 flex flex-col md:flex-row gap-2">
+      <div className="mx-[2%] mt-2 flex flex-col md:flex-row gap-2">
         {/* Sidebar — full-width strip on mobile, side panel on desktop */}
         {showSidebar && (
           <div className="w-full md:w-[30%] shrink-0 bg-white/70 rounded-lg p-2 max-h-[30vh] md:max-h-[60vh] overflow-y-auto order-first">
@@ -294,7 +294,7 @@ export function AIQueryInterface() {
         {/* Main Chat Area */}
         <div className="flex-1 min-w-0">
           {/* Messages */}
-          <div className="bg-white rounded-lg p-4 md:p-5 min-h-[35vh] md:min-h-[40vh] max-h-[60vh] md:max-h-[70vh] overflow-y-auto">
+          <div className="bg-white rounded-lg p-[4%] md:p-5 min-h-[35vh] md:min-h-[40vh] max-h-[60vh] md:max-h-[70vh] overflow-y-auto">
             {messages.length === 0 && !isStreaming ? (
               <div className="flex items-center justify-center h-full py-[15%]">
                 <p className="font-poppins text-xs md:text-sm text-text-secondary text-center">
@@ -311,7 +311,7 @@ export function AIQueryInterface() {
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[90%] md:max-w-[80%] rounded-lg px-3 md:px-4 py-2 md:py-3 font-poppins text-[12px] md:text-sm leading-relaxed ${
+                      className={`max-w-[90%] md:max-w-[80%] rounded-lg px-[3%] md:px-4 py-2 md:py-3 font-poppins text-xs md:text-sm leading-relaxed ${
                         msg.role === 'user'
                           ? 'bg-primary-muted text-text-primary rounded-tr-sm'
                           : 'bg-surface-muted text-text-secondary prose prose-sm max-w-none'
@@ -327,7 +327,7 @@ export function AIQueryInterface() {
                 {/* Status indicator (progress bar style) */}
                 {isStreaming && statusMessage && !streamingContent && (
                   <div className="flex justify-start">
-                    <div className="rounded-lg px-3 md:px-4 py-2 md:py-3 font-poppins text-[12px] md:text-sm bg-surface-muted text-text-secondary flex items-center gap-2">
+                    <div className="rounded-lg px-[3%] md:px-4 py-2 md:py-3 font-poppins text-xs md:text-sm bg-surface-muted text-text-secondary flex items-center gap-2">
                       <Loader2 size={14} className="animate-spin shrink-0" />
                       <span>{statusMessage}</span>
                     </div>
@@ -337,7 +337,7 @@ export function AIQueryInterface() {
                 {/* Streaming answer */}
                 {isStreaming && streamingContent && (
                   <div className="flex justify-start">
-                    <div className="max-w-[90%] md:max-w-[80%] rounded-lg px-3 md:px-4 py-2 md:py-3 font-poppins text-[12px] md:text-sm leading-relaxed bg-surface-muted text-text-secondary prose prose-sm max-w-none">
+                    <div className="max-w-[90%] md:max-w-[80%] rounded-lg px-[3%] md:px-4 py-2 md:py-3 font-poppins text-xs md:text-sm leading-relaxed bg-surface-muted text-text-secondary prose prose-sm max-w-none">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamingContent}</ReactMarkdown>
                       <span className="inline-block w-1 h-4 md:w-1.5 md:h-5 bg-primary-light animate-pulse ml-1 rounded-sm align-middle" />
                     </div>
@@ -347,7 +347,7 @@ export function AIQueryInterface() {
                 {/* Waiting cursor when streaming but no content yet */}
                 {isStreaming && !streamingContent && !statusMessage && (
                   <div className="flex justify-start">
-                    <div className="rounded-lg px-3 md:px-4 py-2 md:py-3 font-poppins text-[12px] md:text-sm bg-surface-muted text-text-secondary flex items-center gap-2">
+                    <div className="rounded-lg px-[3%] md:px-4 py-2 md:py-3 font-poppins text-xs md:text-sm bg-surface-muted text-text-secondary flex items-center gap-2">
                       <span className="inline-block w-1.5 h-4 md:w-2 md:h-5 bg-primary-light animate-pulse rounded-sm align-middle" />
                     </div>
                   </div>
@@ -356,7 +356,7 @@ export function AIQueryInterface() {
                 {/* Collapsible reasoning block */}
                 {reasoningContent && (
                   <div className="flex justify-start">
-                    <div className="max-w-[90%] md:max-w-[80%] rounded-lg px-3 md:px-4 py-2 md:py-3 font-poppins text-[11px] md:text-xs bg-surface-muted/50 text-text-secondary border border-surface-border">
+                    <div className="max-w-[90%] md:max-w-[80%] rounded-lg px-[3%] md:px-4 py-2 md:py-3 font-poppins text-[11px] md:text-xs bg-surface-muted/50 text-text-secondary border border-surface-border">
                       <button
                         onClick={() => setShowReasoning((s) => !s)}
                         className="flex items-center gap-1.5 text-primary-light hover:text-primary transition-colors"
@@ -378,7 +378,7 @@ export function AIQueryInterface() {
             )}
 
             {error && (
-              <div className="mt-2 p-1.5 md:p-2 rounded bg-danger-light/50 border border-danger-accent/30">
+              <div className="mt-2 p-[2%] md:p-2 rounded bg-danger-light/50 border border-danger-accent/30">
                 <p className="font-poppins text-[9px] md:text-[10px] text-danger-dark">{error}</p>
               </div>
             )}
@@ -387,7 +387,7 @@ export function AIQueryInterface() {
           {/* Input Area */}
           <div className="mt-3 md:mt-4">
             <div
-              className="flex items-center gap-2 md:gap-3 rounded-xl px-3 md:px-4 py-2 md:py-3"
+              className="flex items-center gap-2 md:gap-3 rounded-xl px-[3%] md:px-4 py-2 md:py-3"
               style={{
                 background: 'rgba(255, 255, 255, 0.3)',
                 boxShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.25)',
@@ -399,7 +399,7 @@ export function AIQueryInterface() {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="flex-1 bg-transparent outline-none font-poppins text-[13px] md:text-[15px] text-text-primary leading-tight placeholder:text-text-primary/70"
+                className="flex-1 bg-transparent outline-none font-poppins text-xs md:text-[15px] text-text-primary leading-tight placeholder:text-text-primary/70"
                 placeholder="Ask a question..."
                 disabled={isStreaming}
                 aria-label="AI query input"
