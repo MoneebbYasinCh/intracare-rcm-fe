@@ -85,10 +85,10 @@ function RiskItem({ item, isLast }) {
 
 export function LiquidityRiskPanel() {
   return (
-    <div className="border border-border rounded-lg p-4 md:p-5 h-full flex flex-col">
+    <div className="border border-border rounded-lg p-[4%] md:p-5 h-full flex flex-col">
       {/* Header */}
       <div className="mb-2">
-        <h3 className="font-poppins font-semibold text-base md:text-lg text-primary leading-normal">
+        <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary leading-normal">
           Liquidity Risk Intelligence
         </h3>
         <p className="font-poppins font-light text-xs md:text-sm text-text-secondary leading-normal">
@@ -98,7 +98,7 @@ export function LiquidityRiskPanel() {
 
       {/* Total Risk Amount */}
       <div className="mb-2">
-        <span className="font-poppins font-bold text-xl text-danger-accent leading-none">$4,100,000 </span>
+        <span className="font-poppins font-bold text-[5.5vw] md:text-xl text-danger-accent leading-none">$4,100,000 </span>
         <span className="font-poppins text-xs text-text-secondary">in identified liquidity risks across 4 key areas</span>
       </div>
 

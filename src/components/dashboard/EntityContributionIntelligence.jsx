@@ -114,7 +114,7 @@ function EntityCard({ entity, showLogo = true }) {
       </div>
 
       {/* Pattern */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5">
         <p className="font-poppins text-xs text-text-secondary">
           <span className="font-semibold text-primary">Pattern:</span> {entity.pattern}
         </p>
@@ -161,7 +161,7 @@ function ProviderCard({ provider }) {
       </div>
 
       {/* Pattern & Trend */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5">
         <p className="font-poppins text-xs text-text-secondary">
           <span className="font-semibold text-primary">Pattern:</span> {provider.pattern}
         </p>
@@ -177,10 +177,10 @@ function ProviderCard({ provider }) {
 
 export function EntityContributionIntelligence() {
   return (
-    <div className="border border-border rounded-xl p-4 md:p-5">
+    <div className="border border-border rounded-xl p-[4%] md:p-5">
       {/* Header */}
       <div className="mb-3">
-        <h3 className="font-poppins font-semibold text-base md:text-lg text-primary leading-normal">
+        <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary leading-normal">
           Entity Contribution Intelligence
         </h3>
         <p className="font-poppins font-light text-xs md:text-sm text-text-secondary leading-normal">
@@ -198,7 +198,7 @@ export function EntityContributionIntelligence() {
                 <img src={metric.logo} alt={metric.value} className="h-5 w-auto object-contain" />
               </div>
             ) : (
-              <p className={`font-poppins font-bold text-xl ${metric.valueColor || 'text-primary'}`}>
+              <p className={`font-poppins font-bold text-[5.5vw] md:text-xl ${metric.valueColor || 'text-primary'}`}>
                 {metric.value}
               </p>
             )}
@@ -208,7 +208,7 @@ export function EntityContributionIntelligence() {
       </div>
 
       {/* Payer & Clinic Rankings */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {/* Payer Ranking */}
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -254,11 +254,11 @@ export function EntityContributionIntelligence() {
           <p className="font-poppins text-sm text-text-primary mb-2">Top Contributor Concentration</p>
           <div className="space-y-2">
             {concentrationData.map((item, index) => (
-              <div key={index} className="flex items-center gap-2 sm:gap-3">
+              <div key={index} className="flex items-center gap-2 md:gap-3">
                 {item.logo ? (
                   <img src={item.logo} alt={item.name} className="h-4 w-20 object-contain object-left" />
                 ) : (
-                  <span className="font-poppins text-xs text-text-primary w-16 sm:w-20">{item.name}</span>
+                  <span className="font-poppins text-xs text-text-primary w-16 md:w-20">{item.name}</span>
                 )}
                 <div className="flex-1 h-2 bg-surface-border rounded-full overflow-hidden">
                   <div
@@ -266,7 +266,7 @@ export function EntityContributionIntelligence() {
                     style={{ width: `${item.progress * 3}%` }}
                   />
                 </div>
-                <span className="font-poppins text-sm text-text-primary w-12 sm:w-14 text-right">{item.value}</span>
+                <span className="font-poppins text-sm text-text-primary w-12 md:w-14 text-right">{item.value}</span>
               </div>
             ))}
           </div>

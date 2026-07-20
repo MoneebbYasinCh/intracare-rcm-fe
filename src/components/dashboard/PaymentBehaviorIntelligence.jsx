@@ -68,7 +68,7 @@ function PayerCard({ payer }) {
 
   return (
     <div className="bg-primary-muted rounded-lg p-2.5">
-      <div className="flex flex-col lg:flex-row gap-3">
+      <div className="flex flex-col md:flex-row gap-3">
         {/* Left Section */}
         <div className="flex-1 min-w-0">
           {/* Top Row: Logo + Description */}
@@ -80,7 +80,7 @@ function PayerCard({ payer }) {
           </div>
 
           {/* Metrics Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 mt-1.5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5 mt-1.5">
             <div>
               <p className="font-poppins text-xs text-text-secondary">Monthly Contribution</p>
               <p className="font-poppins font-semibold text-xs text-text-primary">{payer.monthlyContribution}</p>
@@ -112,8 +112,8 @@ function PayerCard({ payer }) {
         </div>
 
         {/* Right Section */}
-        <div className="w-full lg:w-[220px] flex-shrink-0 flex flex-col gap-1">
-          <div className="flex lg:justify-end">
+        <div className="w-full md:w-[30%] flex-shrink-0 flex flex-col gap-1">
+          <div className="flex md:justify-end">
             <span className={`px-2.5 py-1 rounded-full text-xs font-prompt font-medium ${risk.bgColor} ${risk.textColor}`}>
               {risk.label}
             </span>
@@ -142,11 +142,11 @@ function AlertBox({ title, description, evidence }) {
 
 export function PaymentBehaviorIntelligence() {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
       {/* Left Column - Payment Behavior Intelligence */}
-      <div className="border border-border rounded-lg p-4 flex flex-col h-full">
+      <div className="border border-border rounded-lg p-[4%] md:p-4 flex flex-col h-full">
         <div className="mb-3">
-          <h3 className="font-poppins font-semibold text-base md:text-lg text-primary">Payment Behavior Intelligence</h3>
+          <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary">Payment Behavior Intelligence</h3>
           <p className="font-poppins font-light text-xs md:text-sm text-text-secondary">
             How different payer groups behave over time - patterns, delays, and emerging slowdowns
           </p>
@@ -179,7 +179,7 @@ export function PaymentBehaviorIntelligence() {
           <div className="space-y-2">
             {timelineData.map((item, index) => (
               <div key={index}>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-1">
                   <img src={item.logo} alt={item.name} className="h-5 w-24 object-contain object-left" />
                   <span className="font-poppins text-xs text-text-primary">
                     Baseline: {item.baseline} | Current: {item.current}
@@ -203,13 +203,13 @@ export function PaymentBehaviorIntelligence() {
         </div>
 
         {/* Payer Portfolio Summary */}
-        <div className="bg-surface-muted rounded-lg p-3.5">
+        <div className="bg-surface-muted rounded-lg p-[4%] md:p-3.5">
           <h4 className="font-poppins font-semibold text-sm text-primary mb-2">Payer Portfolio Summary</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {portfolioSummary.map((metric, index) => (
               <div key={index}>
                 <p className="font-prompt text-xs text-text-primary">{metric.label}</p>
-                <p className={`font-prompt font-semibold text-xl leading-tight ${metric.valueColor || 'text-primary'}`}>
+                <p className={`font-prompt font-semibold text-[5.5vw] md:text-xl leading-tight ${metric.valueColor || 'text-primary'}`}>
                   {metric.value}
                 </p>
                 <p className="font-prompt text-xs text-text-secondary">{metric.description}</p>
@@ -220,9 +220,9 @@ export function PaymentBehaviorIntelligence() {
       </div>
 
       {/* Right Column - Cash Driver Decomposition */}
-      <div className="border border-border rounded-xl p-4 md:p-5 flex flex-col h-full">
+      <div className="border border-border rounded-xl p-[4%] md:p-5 flex flex-col h-full">
         <div className="mb-3">
-          <h3 className="font-poppins font-semibold text-base md:text-lg text-primary leading-normal">
+          <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary leading-normal">
             Cash Driver Decomposition
           </h3>
           <p className="font-poppins font-light text-xs md:text-sm text-text-secondary leading-normal">
@@ -233,7 +233,7 @@ export function PaymentBehaviorIntelligence() {
         {/* Forecasted Cash Movement */}
         <div className="bg-danger-muted/40 rounded-xl p-4 mb-4 text-center">
           <p className="font-poppins text-xs text-text-primary mb-1">Forecasted Cash Movement</p>
-          <p className="font-poppins font-bold text-xl text-danger-accent mb-1">-$660,000</p>
+          <p className="font-poppins font-bold text-[5.5vw] md:text-xl text-danger-accent mb-1">-$660,000</p>
           <p className="font-poppins text-xs text-text-secondary">Net change driven by 1 positive and 3 negative factors</p>
         </div>
 
@@ -249,14 +249,14 @@ export function PaymentBehaviorIntelligence() {
               <span className="w-3 h-3 rounded-full bg-success" />
               <span className="font-poppins font-semibold text-sm text-success">Positive Drivers</span>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1">
+            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 mb-1">
               <div className="flex-1 h-7 bg-surface-border rounded overflow-hidden relative">
                 <div className="h-full bg-gradient-to-r from-success to-success/60 rounded" style={{ width: '72%' }} />
                 <span className="absolute left-2 top-1/2 -translate-y-1/2 font-poppins font-semibold text-sm text-text-primary">
                   $420,000
                 </span>
               </div>
-              <div className="text-left min-w-0 sm:min-w-[140px]">
+              <div className="text-left min-w-0 md:min-w-[140px]">
                 <p className="font-poppins font-semibold text-sm text-text-primary">Increased Charges</p>
                 <p className="font-poppins text-xs text-text-secondary">Higher service volume in primary care and specialties.</p>
               </div>
@@ -280,14 +280,14 @@ export function PaymentBehaviorIntelligence() {
               { amount: '-$180,000', barWidth: '35%', title: 'AR Aging', desc: 'Reduced recovery rates on aging accounts', evidence: 'AR >90 days increased from 18% → 26%, contributing ~$180K reduction in near-term recoverability' },
             ].map((item, index) => (
               <div key={index} className="mb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1">
+            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 mb-1">
                   <div className="flex-1 h-7 bg-surface-border rounded overflow-hidden relative">
                     <div className="h-full bg-gradient-to-r from-danger to-danger/60 rounded" style={{ width: item.barWidth }} />
                     <span className="absolute left-2 top-1/2 -translate-y-1/2 font-poppins font-semibold text-sm text-text-primary">
                       {item.amount}
                     </span>
                   </div>
-                  <div className="text-left min-w-0 sm:min-w-[140px]">
+                  <div className="text-left min-w-0 md:min-w-[140px]">
                     <p className="font-poppins font-semibold text-sm text-text-primary">{item.title}</p>
                     <p className="font-poppins text-xs text-text-secondary">{item.desc}</p>
                   </div>
@@ -323,7 +323,7 @@ export function PaymentBehaviorIntelligence() {
               { label: 'Payment Lag', value: '-$290,000 | Lag ↑ +11 days', color: 'text-warning', dotColor: 'bg-warning' },
               { label: 'AR Aging', value: '-$180,000 | AR >90 at 26%', color: 'text-danger', dotColor: 'bg-danger' },
             ].map((item, index) => (
-              <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 bg-surface-muted rounded-md px-4 py-2.5">
+              <div key={index} className="flex flex-col md:flex-row md:items-center md:justify-between gap-1 bg-surface-muted rounded-md px-4 py-2.5">
                 <div className="flex items-center gap-3 flex-1">
                   <span className={`w-2.5 h-2.5 rounded-full ${item.dotColor}`} />
                   <span className="font-poppins text-xs text-text-primary text-left">{item.label}</span>

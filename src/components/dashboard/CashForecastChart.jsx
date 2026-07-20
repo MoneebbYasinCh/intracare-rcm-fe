@@ -29,10 +29,10 @@ const chartData = [
 
 export function CashForecastChart() {
   return (
-    <div className="border border-border rounded-lg p-4 md:p-5 h-full flex flex-col">
+    <div className="border border-border rounded-lg p-[4%] md:p-5 h-full flex flex-col">
       {/* Header */}
       <div className="mb-3">
-        <h3 className="font-poppins font-semibold text-base md:text-lg text-primary leading-normal">
+        <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary leading-normal">
           Cash Intelligence & Liquidity Forecast
         </h3>
         <p className="font-poppins font-light text-xs md:text-sm text-text-secondary leading-normal">
@@ -172,7 +172,7 @@ export function CashForecastChart() {
           className="absolute pointer-events-none"
           style={{ top: '32%', left: '37%', transform: 'translateX(-50%)' }}
         >
-          <p className="font-prompt font-semibold text-[10px] md:text-xs text-text-secondary leading-tight text-center w-[120px] md:w-[170px]">
+          <p className="font-prompt font-semibold text-[10px] md:text-xs text-text-secondary leading-tight text-center w-[30vw] md:w-[170px]">
             Expected dip driven
             <br />
             by payer delays
@@ -183,7 +183,7 @@ export function CashForecastChart() {
           className="absolute pointer-events-none"
           style={{ top: '12%', left: '71%', transform: 'translateX(-50%)' }}
         >
-          <p className="font-prompt font-semibold text-[10px] md:text-xs text-text-secondary leading-tight text-center w-[135px] md:w-[190px]">
+          <p className="font-prompt font-semibold text-[10px] md:text-xs text-text-secondary leading-tight text-center w-[34vw] md:w-[190px]">
             Recovery from high-value
             <br />
             claims nearing payments

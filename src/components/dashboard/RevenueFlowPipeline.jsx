@@ -51,7 +51,7 @@ function PipelineStage({ stage, isLast }) {
   return (
     <div className="mb-4">
       {/* Stage Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 mb-1.5">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5 mb-1.5">
         <div>
           <h4 className="font-poppins font-semibold text-sm text-text-primary leading-snug">
             {stage.name}
@@ -82,7 +82,7 @@ function PipelineStage({ stage, isLast }) {
             <span className="block font-poppins text-xs md:text-sm text-danger-dark">
               {stage.warningText}
             </span>
-            <span className="block font-poppins text-xs md:text-sm text-danger-dark mt-0.5 sm:mt-0 sm:ml-4">
+            <span className="block font-poppins text-xs md:text-sm text-danger-dark mt-0.5 md:mt-0 md:ml-4">
               <span className="font-bold">AI Evidence:</span> {stage.evidence}
             </span>
           </div>
@@ -114,10 +114,10 @@ function ConversionInsight({ title, children }) {
 
 export function RevenueFlowPipeline() {
   return (
-    <div className="border border-border rounded-lg p-4 md:p-5">
+    <div className="border border-border rounded-lg p-[4%] md:p-5">
       {/* Header */}
       <div className="mb-3">
-        <h3 className="font-poppins font-semibold text-base md:text-lg text-primary leading-normal">
+        <h3 className="font-poppins font-semibold text-[4.5vw] md:text-lg text-primary leading-normal">
           Revenue Flow Pipeline
         </h3>
         <p className="font-poppins font-light text-xs md:text-sm text-text-secondary leading-normal">
@@ -126,7 +126,7 @@ export function RevenueFlowPipeline() {
       </div>
 
       {/* Pipeline Visualization */}
-      <div className="bg-primary-muted rounded-md p-4 mb-4">
+      <div className="bg-primary-muted rounded-md p-[4%] md:p-4 mb-4">
         {pipelineStages.map((stage, index) => (
           <PipelineStage 
             key={stage.id} 
@@ -152,12 +152,12 @@ export function RevenueFlowPipeline() {
       </div>
 
       {/* Pipeline Metrics Summary */}
-      <div className="bg-primary-muted rounded-md p-4">
+      <div className="bg-primary-muted rounded-md p-[4%] md:p-4">
         <h4 className="font-poppins font-semibold text-sm text-primary mb-3">
           Pipeline Metrics
         </h4>
         <div className="w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 md:gap-x-10 gap-y-3">
           {pipelineMetrics.map((metric, index) => (
             <div key={index} className="text-left md:justify-self-center">
               <p className="font-prompt text-xs text-text-primary">{metric.label}</p>

@@ -1,16 +1,28 @@
-import { Link, NavLink } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, NavLink, Navigate, useNavigate } from 'react-router-dom';
+import { LogOut, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
-  { to: '/', label: 'Home' },
-  { to: '/cash-intelligence', label: 'Cash Intelligence' },
+  { to: '/home', label: 'Home' },
+  { to: '/cash-intelligence/dashboard', label: 'Cash Intelligence' },
   { to: '/revenue-opportunity', label: 'Opportunity Engine' },
   { to: '/operational-intelligence', label: 'Operational Insights' },
 ];
 
 export function HomePlaceholderPage() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div
@@ -24,40 +36,51 @@ export function HomePlaceholderPage() {
     >
       {/* Navigation */}
       <header className="relative z-10 w-[95%] md:w-[90%] mx-auto py-5">
-        <nav className="flex items-center justify-between md:justify-center">
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            className="md:hidden p-2 rounded border border-white/30 text-white hover:bg-white/10 transition-colors"
-            aria-label="Toggle navigation menu"
-            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-          >
-            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          <nav className="flex items-center justify-between md:justify-center">
+            {/* Mobile menu button */}
+            <button
+              type="button"
+              className="md:hidden p-2 rounded border border-white/30 text-white hover:bg-white/10 transition-colors"
+              aria-label="Toggle navigation menu"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            >
+              {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
 
-          {/* Desktop nav */}
-          <ul className="hidden md:flex items-center justify-center gap-8 md:gap-12">
-            {navItems.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `font-poppins text-sm md:text-base transition-colors ${
-                      isActive
-                        ? 'text-[#FF7A58] underline underline-offset-4'
-                        : 'text-white hover:text-[#FFD7CC]'
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+            {/* Desktop nav */}
+            <ul className="hidden md:flex items-center justify-center gap-8 md:gap-12">
+              {navItems.map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `font-poppins text-sm md:text-base transition-colors ${
+                        isActive
+                          ? 'text-[#FF7A58] underline underline-offset-4'
+                          : 'text-white hover:text-[#FFD7CC]'
+                      }`
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+              {isAuthenticated && (
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1.5 font-poppins text-sm text-white/70 hover:text-[#FF7A58] transition-colors ml-4 pl-4 border-l border-white/20"
+                  >
+                    <LogOut size={14} />
+                    Sign Out
+                  </button>
+                </li>
+              )}
+            </ul>
 
-          {/* Spacer for mobile to keep button left-aligned */}
-          <div className="md:hidden w-10" />
-        </nav>
+            {/* Spacer for mobile to keep button left-aligned */}
+            <div className="md:hidden w-10" />
+          </nav>
 
         {/* Mobile menu dropdown */}
         <div
@@ -84,6 +107,17 @@ export function HomePlaceholderPage() {
                   </NavLink>
                 </li>
               ))}
+              {isAuthenticated && (
+                <li className="border-t border-white/10 mt-1 pt-1">
+                  <button
+                    onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded font-poppins text-sm text-white/70 hover:bg-white/10 hover:text-[#FF7A58] transition-colors"
+                  >
+                    <LogOut size={14} />
+                    Sign Out
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -106,7 +140,7 @@ export function HomePlaceholderPage() {
 
           <div className="flex flex-wrap items-center gap-4 mt-8">
             <Link
-              to="/cash-intelligence"
+              to="/login"
               className="inline-flex items-center justify-center rounded-md bg-[#FF7A58] hover:bg-[#e86a4a] px-6 py-3 font-poppins font-semibold text-sm text-white transition-colors"
             >
               Enter Revenue Command Center
