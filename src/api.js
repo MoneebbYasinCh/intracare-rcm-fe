@@ -346,4 +346,36 @@ export const api = {
   getRefreshToken,
   setTokens,
   clearTokens,
+
+  // ── Forecast API (public, no auth needed) ──
+
+  async getForecast(nDays = 14, historyDays = 90) {
+    try {
+      const res = await fetch(`${BASE_URL}/forecast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ n_days: nDays, history_days: historyDays }),
+      });
+      if (!res.ok) throw new Error(`Forecast API error: ${res.status}`);
+      return res.json();
+    } catch (e) {
+      console.error('Forecast fetch failed:', e);
+      return null;
+    }
+  },
+
+  async getForecastRiskCards(nDays = 14, historyDays = 90) {
+    try {
+      const res = await fetch(`${BASE_URL}/forecast/risk-cards`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ n_days: nDays, history_days: historyDays }),
+      });
+      if (!res.ok) throw new Error(`Risk cards API error: ${res.status}`);
+      return res.json();
+    } catch (e) {
+      console.error('Risk cards fetch failed:', e);
+      return null;
+    }
+  },
 };
