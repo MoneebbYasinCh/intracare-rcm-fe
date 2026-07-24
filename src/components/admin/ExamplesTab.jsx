@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Plus, Pencil, Trash2, Check, X, Loader2, Play } from 'lucide-react';
+import { Plus, Pencil, Trash2, Check, X, Loader2, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { api } from '../../api';
 import { useToast } from '../shared/Toast';
 import { ConfirmDialog } from '../shared/ConfirmDialog';
+
+const PAGE_SIZE = 50;
 
 const TABLE_OPTIONS = [
   'gold_snowflake_charges_and_payments',
@@ -59,6 +61,8 @@ const EMPTY_FORM = {
 export function ExamplesTab({ onVerifyChange }) {
   const toast = useToast();
   const [examples, setExamples] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -73,27 +77,32 @@ export function ExamplesTab({ onVerifyChange }) {
   const onVerifyChangeRef = useRef(onVerifyChange);
   onVerifyChangeRef.current = onVerifyChange;
 
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const offset = page * PAGE_SIZE;
+
   const notifyVerify = useCallback((data) => {
-    const total = data.length;
     const verified = data.filter((ex) => ex.verified).length;
-    const allVerified = total > 0 && verified === total;
-    onVerifyChangeRef.current?.({ allVerified, verified, total });
+    const allVerified = data.length > 0 && verified === data.length;
+    onVerifyChangeRef.current?.({ allVerified, verified, total: data.length });
   }, []);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (pageNum) => {
     setLoading(true);
+    const off = (pageNum ?? page) * PAGE_SIZE;
     try {
-      const data = await api.adminListExamples();
-      setExamples(Array.isArray(data) ? data : []);
-      notifyVerify(Array.isArray(data) ? data : []);
+      const data = await api.adminListExamples(off, PAGE_SIZE);
+      const items = data.examples ?? (Array.isArray(data) ? data : []);
+      setExamples(items);
+      setTotal(data.total ?? items.length);
+      notifyVerify(items);
     } catch (e) {
       toast.error(e.message);
     } finally {
       setLoading(false);
     }
-  }, [toast, notifyVerify]);
+  }, [toast, notifyVerify, page]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(page); }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openAdd = () => {
     setEditingIndex(null);
@@ -102,9 +111,10 @@ export function ExamplesTab({ onVerifyChange }) {
     setModalRunResult(null);
   };
 
-  const openEdit = (idx) => {
-    const ex = examples[idx];
-    setEditingIndex(idx);
+  const openEdit = (id) => {
+    const ex = examples.find((e) => e.id === id);
+    if (!ex) return;
+    setEditingIndex(id);
     setForm({
       natural_language: ex.natural_language || '',
       sql: ex.sql || '',
@@ -191,7 +201,7 @@ export function ExamplesTab({ onVerifyChange }) {
       <div className="flex items-center justify-between">
         <h3 className="font-poppins font-semibold text-lg text-text-primary">
           NL-to-SQL Examples
-          <span className="ml-2 text-sm font-normal text-text-secondary">({examples.length})</span>
+          <span className="ml-2 text-sm font-normal text-text-secondary">({total} total)</span>
         </h3>
         <button
           onClick={openAdd}
@@ -226,9 +236,10 @@ export function ExamplesTab({ onVerifyChange }) {
             <tbody className="divide-y divide-border">
               {examples.map((ex, idx) => {
                 const rowResult = rowRunResults[idx];
+                const exampleId = ex.id ?? idx;
                 return (
-                  <tr key={idx} className="hover:bg-surface-muted/20 transition-colors">
-                    <td className="px-3 py-2.5 font-prompt text-sm text-text-secondary">{idx}</td>
+                  <tr key={exampleId} className="hover:bg-surface-muted/20 transition-colors">
+                    <td className="px-3 py-2.5 font-prompt text-sm text-text-secondary">{exampleId}</td>
                     <td className="px-3 py-2.5 font-prompt text-sm text-text-primary break-words" title={ex.natural_language}>
                       {ex.natural_language}
                     </td>
@@ -258,14 +269,14 @@ export function ExamplesTab({ onVerifyChange }) {
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-1">
                         <button
-                          onClick={() => openEdit(idx)}
+                          onClick={() => openEdit(exampleId)}
                           className="p-1.5 rounded hover:bg-primary-muted/30 text-text-secondary hover:text-primary transition-colors"
                           title="Edit"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
-                          onClick={() => setDeleteTarget(idx)}
+                          onClick={() => setDeleteTarget(exampleId)}
                           className="p-1.5 rounded hover:bg-danger-light text-text-secondary hover:text-danger transition-colors"
                           title="Delete"
                         >
@@ -303,6 +314,33 @@ export function ExamplesTab({ onVerifyChange }) {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {!loading && examples.length > 0 && (
+        <div className="flex items-center justify-between">
+          <span className="font-poppins text-xs text-text-secondary">
+            Showing {offset + 1}–{Math.min(offset + examples.length, total)} of {total}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+              className="p-1.5 rounded border border-border hover:bg-surface-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <span className="font-poppins text-xs text-text-secondary tabular-nums">
+              {page + 1} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={page >= totalPages - 1}
+              className="p-1.5 rounded border border-border hover:bg-surface-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
         </div>
       )}
 

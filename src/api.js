@@ -188,8 +188,8 @@ export const api = {
 
   // ── Admin API ──
 
-  async adminListExamples() {
-    const res = await authFetch(`${BASE_URL}/admin/examples`);
+  async adminListExamples(offset = 0, limit = 50) {
+    const res = await authFetch(`${BASE_URL}/admin/examples?offset=${offset}&limit=${limit}`);
     if (!res) throw new Error('Unable to connect to server');
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
