@@ -3,8 +3,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { api } from '../../api';
+import { ToolOutputCard } from './ToolOutputCard';
 
-function parseSSEStream(reader, { onAnswer, onStatus, onReasoning, onDone, onError }) {
+function parseSSEStream(reader, { onAnswer, onStatus, onReasoning, onToolOutput, onDone, onError }) {
   const decoder = new TextDecoder();
   let buffer = '';
 
@@ -29,6 +30,10 @@ function parseSSEStream(reader, { onAnswer, onStatus, onReasoning, onDone, onErr
 
         if (event.type === 'reasoning') {
           onReasoning?.(event.content || '');
+        }
+
+        if (event.type === 'tool_output') {
+          onToolOutput?.(event);
         }
 
         if (event.type === 'done') {
@@ -62,7 +67,7 @@ function parseSSEStream(reader, { onAnswer, onStatus, onReasoning, onDone, onErr
 export function AIQueryInterface() {
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [timeline, setTimeline] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
@@ -89,14 +94,20 @@ export function AIQueryInterface() {
   const loadConversation = useCallback(async (id) => {
     setError(null);
     setActiveConversationId(id);
-    setMessages([]);
+    setTimeline([]);
     try {
       const data = await api.getConversationMessages(id);
-      const flat = (data || []).flatMap((m) => [
-        ...(m.user ? [{ role: 'user', content: m.user }] : []),
-        ...(m.assistant ? [{ role: 'assistant', content: m.assistant }] : []),
-      ]);
-      setMessages(flat);
+      const items = [];
+      for (const m of (data || [])) {
+        if (m.user) items.push({ type: 'user', content: m.user });
+        if (m.tool_outputs) {
+          for (const to of m.tool_outputs) {
+            items.push({ type: 'tool_output', tool_name: to.tool_name, tool_label: to.tool_label, output: to.output });
+          }
+        }
+        if (m.assistant) items.push({ type: 'assistant', content: m.assistant });
+      }
+      setTimeline(items);
     } catch {
       setError('Failed to load conversation messages.');
     }
@@ -104,7 +115,7 @@ export function AIQueryInterface() {
 
   const handleNewChat = useCallback(() => {
     setActiveConversationId(null);
-    setMessages([]);
+    setTimeline([]);
     setStreamingContent('');
     setError(null);
     setStatusMessage('');
@@ -122,8 +133,7 @@ export function AIQueryInterface() {
     setReasoningContent('');
     setShowReasoning(false);
 
-    const userMessage = { role: 'user', content: text };
-    setMessages((prev) => [...prev, userMessage]);
+    setTimeline((prev) => [...prev, { type: 'user', content: text }]);
     setIsStreaming(true);
     setStreamingContent('');
 
@@ -165,13 +175,16 @@ export function AIQueryInterface() {
         onReasoning: (content) => {
           setReasoningContent((prev) => prev + content);
         },
+        onToolOutput: (event) => {
+          setTimeline((prev) => [...prev, { type: 'tool_output', ...event }]);
+        },
         onDone: (conversationId) => {
           setIsStreaming(false);
           setStreamingContent('');
           setStatusMessage('');
 
           if (assistantContent) {
-            setMessages((prev) => [...prev, { role: 'assistant', content: assistantContent }]);
+            setTimeline((prev) => [...prev, { type: 'assistant', content: assistantContent }]);
           }
 
           if (conversationId) {
@@ -186,7 +199,7 @@ export function AIQueryInterface() {
           setStatusMessage('');
           setError(err.message || 'Stream error occurred.');
           if (assistantContent) {
-            setMessages((prev) => [...prev, { role: 'assistant', content: assistantContent }]);
+            setTimeline((prev) => [...prev, { type: 'assistant', content: assistantContent }]);
           }
         },
       });
@@ -295,7 +308,7 @@ export function AIQueryInterface() {
         <div className="flex-1 min-w-0">
           {/* Messages */}
           <div className="bg-white rounded-lg p-[4%] md:p-5 min-h-[35vh] md:min-h-[40vh] max-h-[60vh] md:max-h-[70vh] overflow-y-auto">
-            {messages.length === 0 && !isStreaming ? (
+            {timeline.length === 0 && !isStreaming ? (
               <div className="flex items-center justify-center h-full py-[15%]">
                 <p className="font-poppins text-xs md:text-sm text-text-secondary text-center">
                   {activeConversationId
@@ -305,24 +318,37 @@ export function AIQueryInterface() {
               </div>
             ) : (
               <div className="space-y-4 md:space-y-5">
-                {messages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
+                {timeline.map((item, i) => {
+                  if (item.type === 'tool_output') {
+                    return (
+                      <div key={`tool-${i}`} className="flex justify-start">
+                        <ToolOutputCard
+                          toolName={item.tool_name}
+                          toolLabel={item.tool_label}
+                          output={item.output}
+                        />
+                      </div>
+                    );
+                  }
+                  return (
                     <div
-                      className={`max-w-[90%] md:max-w-[80%] rounded-lg px-[3%] md:px-4 py-2 md:py-3 font-poppins text-xs md:text-sm leading-relaxed ${
-                        msg.role === 'user'
-                          ? 'bg-primary-muted text-text-primary rounded-tr-sm'
-                          : 'bg-surface-muted text-text-secondary prose prose-sm max-w-none'
-                      }`}
+                      key={i}
+                      className={`flex ${item.type === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                      {msg.role === 'user' ? msg.content : (
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                      )}
+                      <div
+                        className={`max-w-[90%] md:max-w-[80%] rounded-lg px-[3%] md:px-4 py-2 md:py-3 font-poppins text-xs md:text-sm leading-relaxed ${
+                          item.type === 'user'
+                            ? 'bg-primary-muted text-text-primary rounded-tr-sm'
+                            : 'bg-surface-muted text-text-secondary prose prose-sm max-w-none'
+                        }`}
+                      >
+                        {item.type === 'user' ? item.content : (
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{item.content}</ReactMarkdown>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {/* Status indicator (progress bar style) */}
                 {isStreaming && statusMessage && !streamingContent && (

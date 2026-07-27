@@ -348,8 +348,12 @@ export const api = {
   clearTokens,
 
   // ── Forecast API (public, no auth needed) ──
+  // ponytail: module-level cache survives SPA route changes, clears on hard refresh
+  _forecastCache: null,
+  _riskCardCache: null,
 
   async getForecast(nDays = 14, historyDays = 90) {
+    if (this._forecastCache) return this._forecastCache;
     try {
       const res = await fetch(`${BASE_URL}/forecast`, {
         method: 'POST',
@@ -357,7 +361,9 @@ export const api = {
         body: JSON.stringify({ n_days: nDays, history_days: historyDays }),
       });
       if (!res.ok) throw new Error(`Forecast API error: ${res.status}`);
-      return res.json();
+      const data = await res.json();
+      this._forecastCache = data;
+      return data;
     } catch (e) {
       console.error('Forecast fetch failed:', e);
       return null;
@@ -365,6 +371,7 @@ export const api = {
   },
 
   async getForecastRiskCards(nDays = 14, historyDays = 90) {
+    if (this._riskCardCache) return this._riskCardCache;
     try {
       const res = await fetch(`${BASE_URL}/forecast/risk-cards`, {
         method: 'POST',
@@ -372,7 +379,9 @@ export const api = {
         body: JSON.stringify({ n_days: nDays, history_days: historyDays }),
       });
       if (!res.ok) throw new Error(`Risk cards API error: ${res.status}`);
-      return res.json();
+      const data = await res.json();
+      this._riskCardCache = data;
+      return data;
     } catch (e) {
       console.error('Risk cards fetch failed:', e);
       return null;
