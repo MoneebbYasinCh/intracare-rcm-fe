@@ -40,11 +40,11 @@ export function CashIntelligencePage() {
           <LiquidityRiskPanel />
         </div>
 
-        <RevenueFlowPipeline />
+        {/* <RevenueFlowPipeline />
         <PaymentBehaviorIntelligence />
         <EntityContributionIntelligence />
         <StrategicInsights />
-        <ScenarioSimulationEngine />
+        <ScenarioSimulationEngine /> */}
       </PageContent>
     </PageWrapper>
   );

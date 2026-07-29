@@ -7,8 +7,8 @@ import { useAuth } from '../../context/AuthContext';
 const navItems = [
   { to: '/home', label: 'Home' },
   { to: '/cash-intelligence/dashboard', label: 'Cash Intelligence' },
-  { to: '/revenue-opportunity', label: 'Revenue Opportunity' },
-  { to: '/operational-intelligence', label: 'Operational Intelligence' },
+  /* { to: '/revenue-opportunity', label: 'Revenue Opportunity' }, */
+  /* { to: '/operational-intelligence', label: 'Operational Intelligence' }, */
 ];
 
 export function Header({
