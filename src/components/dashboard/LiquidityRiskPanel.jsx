@@ -10,7 +10,7 @@ const severityConfig = {
 };
 
 const severityLabels = {
-  ar: 'Insurance AR', payer: 'Payer Delays', denial: 'Denials', selfpay: 'Patient Balances',
+  ar: 'Insurance AR', payer: 'Payer Delays', denial: 'Denials', /* selfpay: 'Patient Balances', */
 };
 
 function formatCurrency(n) {
@@ -118,7 +118,7 @@ export function LiquidityRiskPanel() {
           <SeverityPill label={severityLabels.ar} value={snap.ar_severity} />
           <SeverityPill label={severityLabels.payer} value={snap.payer_severity} />
           <SeverityPill label={severityLabels.denial} value={snap.denial_severity} />
-          <SeverityPill label={severityLabels.selfpay} value={snap.selfpay_severity} />
+          {/* <SeverityPill label={severityLabels.selfpay} value={snap.selfpay_severity} /> */}
         </div>
       </div>
 
