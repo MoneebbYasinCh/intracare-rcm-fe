@@ -80,7 +80,7 @@ export function LiquidityRiskPanel() {
   }
 
   const snap = data.risk_snapshot;
-  const cards = snap.risk_cards || [];
+  const cards = (snap.risk_cards || []).filter(card => !/self.?pay/i.test(card.title));
 
   return (
     <div className="border border-border rounded-lg p-[4%] md:p-5 h-full flex flex-col">
