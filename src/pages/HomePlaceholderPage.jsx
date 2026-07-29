@@ -6,8 +6,8 @@ import { useAuth } from '../context/AuthContext';
 const navItems = [
   { to: '/home', label: 'Home' },
   { to: '/cash-intelligence/dashboard', label: 'Cash Intelligence' },
-  { to: '/revenue-opportunity', label: 'Opportunity Engine' },
-  { to: '/operational-intelligence', label: 'Operational Insights' },
+  /* { to: '/revenue-opportunity', label: 'Opportunity Engine' }, */
+  /* { to: '/operational-intelligence', label: 'Operational Insights' }, */
 ];
 
 export function HomePlaceholderPage() {
