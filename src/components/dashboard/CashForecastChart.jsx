@@ -192,12 +192,14 @@ export function CashForecastChart() {
             <Area
               type="monotone"
               dataKey="high"
+              name="high-ci-fill"
               stroke="none"
               fill="url(#confidenceBand)"
             />
             <Area
               type="monotone"
               dataKey="low"
+              name="low-ci-fill"
               stroke="none"
               fill="#FFFFFF"
             />
@@ -233,6 +235,7 @@ export function CashForecastChart() {
             {/* Tooltip on hover */}
             <Tooltip
               formatter={(value, name) => {
+                if (name === 'high-ci-fill' || name === 'low-ci-fill') return [null, null];
                 if (name === 'value') return [`$${(value * 1e6).toLocaleString()}`, 'Predicted'];
                 if (name === 'high') return [`$${(value * 1e6).toLocaleString()}`, 'Upper CI'];
                 if (name === 'low') return [`$${(value * 1e6).toLocaleString()}`, 'Lower CI'];
