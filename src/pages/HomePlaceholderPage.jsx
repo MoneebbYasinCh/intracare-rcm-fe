@@ -140,17 +140,17 @@ export function HomePlaceholderPage() {
 
           <div className="flex flex-wrap items-center gap-4 mt-8">
             <Link
-              to="/login"
+              to="/cash-intelligence/dashboard"
               className="inline-flex items-center justify-center rounded-md bg-[#FF7A58] hover:bg-[#e86a4a] px-6 py-3 font-poppins font-semibold text-sm text-white transition-colors"
             >
               Enter Revenue Command Center
             </Link>
-            <button
-              type="button"
+            <Link
+              to="/cash-intelligence/dashboard"
               className="inline-flex items-center justify-center rounded-md border-2 border-white bg-transparent hover:bg-white/10 px-6 py-3 font-poppins font-semibold text-sm text-white transition-colors"
             >
               Request Executive Demo
-            </button>
+            </Link>
           </div>
         </div>
       </main>
