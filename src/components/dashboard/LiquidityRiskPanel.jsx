@@ -151,15 +151,24 @@ export function LiquidityRiskPanel() {
             Updated {timeAgo(lastUpdated)}
           </p>
         </div>
-        <div className="flex gap-3 text-right">
-          <div>
-            <div className="font-prompt text-[2.8vw] md:text-xs text-text-secondary">7-Day Cash Forecast</div>
-            <div className="font-poppins font-semibold text-sm text-text-primary">{formatCurrency(data.total_predicted)}</div>
+        <div className="flex flex-col items-end gap-1.5">
+          <div className="flex gap-3 text-right">
+            <div>
+              <div className="font-prompt text-[2.8vw] md:text-xs text-text-secondary">7-Day Cash Forecast</div>
+              <div className="font-poppins font-semibold text-sm text-text-primary">{formatCurrency(data.total_predicted)}</div>
+            </div>
+            <div>
+              <div className="font-prompt text-[2.8vw] md:text-xs text-text-secondary">Avg / Day</div>
+              <div className="font-poppins font-semibold text-sm text-text-primary">{formatCurrency(data.avg_daily)}</div>
+            </div>
           </div>
-          <div>
-            <div className="font-prompt text-[2.8vw] md:text-xs text-text-secondary">Avg / Day</div>
-            <div className="font-poppins font-semibold text-sm text-text-primary">{formatCurrency(data.avg_daily)}</div>
-          </div>
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="px-3 py-1 text-xs font-prompt font-medium rounded border border-border text-text-secondary hover:bg-gray-50 hover:text-text-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {refreshing ? 'Refreshing…' : 'Refresh'}
+          </button>
         </div>
       </div>
 
@@ -173,19 +182,6 @@ export function LiquidityRiskPanel() {
             onClick={handleRefresh}
             disabled={refreshing}
             className="px-3 py-1 text-xs font-prompt font-medium rounded-md border border-warning bg-warning text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-          >
-            {refreshing ? 'Refreshing…' : 'Refresh'}
-          </button>
-        </div>
-      )}
-
-      {/* Refresh button when fresh (allow manual refresh) */}
-      {!isStale && (
-        <div className="flex justify-end mb-1.5">
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="px-2 py-0.5 text-xs font-prompt rounded border border-border text-text-secondary hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {refreshing ? 'Refreshing…' : 'Refresh'}
           </button>
