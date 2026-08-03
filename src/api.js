@@ -387,4 +387,30 @@ export const api = {
       return null;
     }
   },
+
+  async getRiskCardsLastUpdated() {
+    try {
+      const res = await fetch(`${BASE_URL}/forecast/risk-cards/last-updated`);
+      if (!res.ok) return { last_updated: null, is_stale: true };
+      return res.json();
+    } catch (e) {
+      console.error('Last-updated check failed:', e);
+      return { last_updated: null, is_stale: true };
+    }
+  },
+
+  async refreshRiskCards() {
+    try {
+      const res = await fetch(`${BASE_URL}/forecast/risk-cards/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!res.ok) throw new Error(`Refresh error: ${res.status}`);
+      this._riskCardCache = null;
+      return res.json();
+    } catch (e) {
+      console.error('Risk cards refresh failed:', e);
+      return null;
+    }
+  },
 };
